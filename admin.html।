@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Earn Point - Admin Panel</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f1f5f9;
+    color:#111827;
+}
+header{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:white;
+    padding:22px;
+}
+header h1{margin:0;font-size:24px}
+header p{margin:6px 0 0;opacity:.9}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+.login{
+    max-width:420px;
+    margin:70px auto;
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 5px 25px #0002;
+}
+.login h2{text-align:center}
+input,select,button{
+    width:100%;
+    padding:13px;
+    margin:7px 0;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:15px;
+}
+button{
+    background:#2563eb;
+    color:white;
+    border:0;
+    font-weight:bold;
+    cursor:pointer;
+}
+button:hover{opacity:.9}
+
+#panel{display:none}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+.stat{
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 3px 15px #0001;
+}
+.stat h3{margin:0;color:#64748b;font-size:14px}
+.stat strong{display:block;font-size:28px;margin-top:10px}
+
+.menu{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+.menu button{
+    width:auto;
+    padding:10px 16px;
+}
+
+.section{
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:20px;
+    box-shadow:0 3px 15px #0001;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+th,td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+}
+th{background:#f8fafc}
+
+.badge{
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    background:#dcfce7;
+    color:#166534;
+}
+
+.danger{background:#dc2626}
+.success{background:#16a34a}
+
+.logout{
+    background:#dc2626;
+    width:auto;
+    float:right;
+}
+
+@media(max-width:700px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    table{font-size:13px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <button class="logout" onclick="logout()">Logout</button>
+    <h1>⚡ Fast Earn Point</h1>
+    <p>Admin Control Panel</p>
+</header>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+    <div class="login">
+        <h2>🔐 Admin Login</h2>
+
+        <input id="adminUser"
+               type="text"
+               placeholder="Admin Username">
+
+        <input id="adminPass"
+               type="password"
+               placeholder="Admin Password">
+
+        <button onclick="login()">Login to Admin Panel</button>
+
+        <p id="loginMsg"
+           style="color:#dc2626;text-align:center"></p>
+    </div>
+</div>
+
+
+<!-- ADMIN PANEL -->
+<div class="container" id="panel">
+
+    <div class="stats">
+
+        <div class="stat">
+            <h3>Total Users</h3>
+            <strong id="users">0</strong>
+        </div>
+
+        <div class="stat">
+            <h3>Active Users</h3>
+            <strong id="active">0</strong>
+        </div>
+
+        <div class="stat">
+            <h3>Pending Withdrawals</h3>
+            <strong id="withdrawals">0</strong>
+        </div>
+
+        <div class="stat">
+            <h3>Total Earnings</h3>
+            <strong>৳0</strong>
+        </div>
+
+    </div>
+
+
+    <div class="menu">
+        <button onclick="showSection('usersSection')">👥 Users</button>
+        <button onclick="showSection('activationSection')">✅ Activations</button>
+        <button onclick="showSection('tasksSection')">📋 Tasks</button>
+        <button onclick="showSection('withdrawSection')">💰 Withdrawals</button>
+        <button onclick="showSection('referralSection')">👥 Referrals</button>
+        <button onclick="showSection('transactionSection')">💳 Transactions</button>
+        <button onclick="showSection('settingsSection')">⚙️ Settings</button>
+    </div>
+
+
+    <!-- USERS -->
+    <div class="section" id="usersSection">
+
+        <h2>👥 Users</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="userTable">
+                <tr>
+                    <td>1</td>
+                    <td>Demo User</td>
+                    <td>৳0</td>
+                    <td><span class="badge">Inactive</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+    <!-- ACTIVATIONS -->
+    <div class="section" id="activationSection" style="display:none">
+
+        <h2>✅ Activations</h2>
+
+        <p>Pending account activations will appear here.</p>
+
+        <button class="success" onclick="alert('Activation system will connect to database later.')">
+            Activate Selected User
+        </button>
+
+    </div>
+
+
+    <!-- TASKS -->
+    <div class="section" id="tasksSection" style="display:none">
+
+        <h2>📋 Manage Tasks</h2>
+
+        <input id="taskName" placeholder="Task name">
+
+        <input id="taskReward"
+               type="number"
+               placeholder="Reward amount">
+
+        <button onclick="addTask()">➕ Add Task</button>
+
+        <div id="taskList"></div>
+
+    </div>
+
+
+    <!-- WITHDRAWALS -->
+    <div class="section" id="withdrawSection" style="display:none">
+
+        <h2>💰 Withdrawals</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Demo User</td>
+                    <td>৳50</td>
+                    <td>bKash</td>
+                    <td>Pending</td>
+                    <td>
+                        <button class="success"
+                        onclick="approveWithdrawal(this)">
+                        Approve
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+    <!-- REFERRALS -->
+    <div class="section" id="referralSection" style="display:none">
+
+        <h2>👥 Referrals</h2>
+
+        <p>Total referrals: <b>0</b></p>
+
+        <p>Referral system will be connected with the database.</p>
+
+    </div>
+
+
+    <!-- TRANSACTIONS -->
+    <div class="section" id="transactionSection" style="display:none">
+
+        <h2>💳 Transactions</h2>
+
+        <table>
+            <tr>
+                <th>User</th>
+                <th>Type</th>
+                <th>Amount</th>
+            </tr>
+
+            <tr>
+                <td>Demo User</td>
+                <td>Demo</td>
+                <td>৳0</td>
+            </tr>
+        </table>
+
+    </div>
+
+
+    <!-- SETTINGS -->
+    <div class="section" id="settingsSection" style="display:none">
+
+        <h2>⚙️ Settings</h2>
+
+        <label>Minimum Withdrawal (৳)</label>
+
+        <input id="minWithdraw"
+               type="number"
+               value="50">
+
+        <label>Daily Bonus (৳)</label>
+
+        <input id="dailyBonus"
+               type="number"
+               value="2">
+
+        <label>Referral Bonus (৳)</label>
+
+        <input id="refBonus"
+               type="number"
+               value="10">
+
+        <button onclick="saveSettings()">
+            💾 Save Settings
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/*
+IMPORTANT:
+This is a FRONTEND DEMO.
+Do not use these credentials for a real production admin system.
+A secure backend authentication system is required.
+*/
+
+const ADMIN_USERNAME = "saiful12";
+const ADMIN_PASSWORD = "saiful12";
+
+
+function login(){
+
+    const username =
+        document.getElementById("adminUser").value;
+
+    const password =
+        document.getElementById("adminPass").value;
+
+    if(
+        username === saiful12 &&
+        password === saiful12 
+    ){
+
+        sessionStorage.setItem("fastEarnAdmin","true");
+
+        document.getElementById("loginBox").style.display="none";
+        document.getElementById("panel").style.display="block";
+
+    }else{
+
+        document.getElementById("loginMsg").innerText =
+        "❌ Username অথবা Password ভুল";
+
+    }
+}
+
+
+function logout(){
+
+    sessionStorage.removeItem("fastEarnAdmin");
+
+    document.getElementById("panel").style.display="none";
+    document.getElementById("loginBox").style.display="block";
+
+}
+
+
+function showSection(id){
+
+    const sections = [
+        "usersSection",
+        "activationSection",
+        "tasksSection",
+        "withdrawSection",
+        "referralSection",
+        "transactionSection",
+        "settingsSection"
+    ];
+
+    sections.forEach(function(section){
+
+        document.getElementById(section).style.display="none";
+
+    });
+
+    document.getElementById(id).style.display="block";
+
+}
+
+
+function addTask(){
+
+    const name =
+        document.getElementById("taskName").value;
+
+    const reward =
+        document.getElementById("taskReward").value;
+
+    if(!name || !reward){
+
+        alert("Task name এবং reward দিন");
+        return;
+
+    }
+
+    const task =
+        document.createElement("div");
+
+    task.style.padding="12px";
+    task.style.borderBottom="1px solid #ddd";
+
+    task.innerHTML =
+        "📋 <b>"+name+"</b> — ৳"+reward;
+
+    document.getElementById("taskList")
+        .appendChild(task);
+
+    document.getElementById("taskName").value="";
+    document.getElementById("taskReward").value="";
+
+}
+
+
+function approveWithdrawal(button){
+
+    button.parentElement.parentElement
+        .querySelector("td:nth-child(4)")
+        .innerHTML =
+        '<span class="badge">Approved</span>';
+
+    button.remove();
+
+}
+
+
+function saveSettings(){
+
+    const min =
+        document.getElementById("minWithdraw").value;
+
+    const bonus =
+        document.getElementById("dailyBonus").value;
+
+    const ref =
+        document.getElementById("refBonus").value;
+
+    localStorage.setItem(
+        "fastEarnSettings",
+        JSON.stringify({
+            minimumWithdrawal:min,
+            dailyBonus:bonus,
+            referralBonus:ref
+        })
+    );
+
+    alert("✅ Settings saved");
+
+
+/* Keep login after page refresh */
+window.onload=function(){
+
+    if(
+        sessionStorage.getItem("fastEarnAdmin")==="true"
+    ){
+
+        document.getElementById("loginBox").style.display="none";
+        document.getElementById("panel").style.display="block";
+
+    }
+
+};
+
+</script>
+
+</body>
+</html
